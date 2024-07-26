@@ -1,7 +1,10 @@
 import React, { useEffect, useRef } from "react"
 import { Cookies, JSON } from "sode-extend-react"
 
-const SelectAPIFormGroup = ({ col, label, eRef, required = false, dropdownParent, searchAPI, searchBy, multiple = false, filter = null }) => {
+const SelectAPIFormGroup = ({ col, label, eRef, required = false, dropdownParent, searchAPI, searchBy, multiple = false, filter = null, onChange = () => { },
+  templateResult,
+  templateSelection
+}) => {
   if (!eRef) eRef = useRef()
 
   useEffect(() => {
@@ -31,28 +34,39 @@ const SelectAPIFormGroup = ({ col, label, eRef, required = false, dropdownParent
               [
                 searchBy,
                 "contains",
-                term
+                term || ''
               ], 'and', filter
             ] : [
               searchBy,
               "contains",
-              term
+              term || ''
             ]
           })
         },
         processResults: function (data, { page }) {
           return {
-            results: (data?.data ?? []).map(x => JSON.flatten(x)).map(({ id, [searchBy]: text }) => {
-              return { id, text }
+            results: (data?.data ?? []).map((x) => {
+              const flatten = JSON.flatten(x)
+              return {
+                id: x.id,
+                text: flatten[searchBy],
+                data: x
+              }
             }),
             pagination: {
               more: ((page ?? 1) * 10) < data.totalCount,
             },
           };
         },
-      }
+      },
+      templateResult,
+      templateSelection
     })
-  }, [dropdownParent])
+  }, [dropdownParent, filter])
+  
+  useEffect(() => {
+    $(eRef.current).on('change', onChange)
+  }, [filter])
 
   return <div className={`form-group ${col} mb-2`}>
     <label htmlFor=''>

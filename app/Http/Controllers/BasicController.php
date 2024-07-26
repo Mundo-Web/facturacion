@@ -53,26 +53,28 @@ class BasicController extends Controller
 
       if ($request->group != null) {
         [$grouping] = $request->group;
-        $selector = str_replace('.', '__', $grouping['selector']);
+        // $selector = str_replace('.', '__', $grouping['selector']);
+        $selector = $grouping['selector'];
         $instance = $this->model::select([
           "{$selector} AS key"
         ])
           ->groupBy($selector);
       }
 
-      if (!Auth::user()->can('users.root')) {
+      if (!Auth::user()->can('general.root')) {
         $instance->whereNotNull('status');
       }
 
       if ($request->filter) {
         $instance->where(function ($query) use ($request) {
-          dxDataGrid::filter($query, $request->filter ?? []);
+          dxDataGrid::filter($query, $request->filter ?? [], false);
         });
       }
 
       if ($request->sort != null) {
         foreach ($request->sort as $sorting) {
-          $selector = \str_replace('.', '__', $sorting['selector']);
+          // $selector = \str_replace('.', '__', $sorting['selector']);
+          $selector = $sorting['selector'];
           $instance->orderBy(
             $selector,
             $sorting['desc'] ? 'DESC' : 'ASC'
@@ -90,16 +92,9 @@ class BasicController extends Controller
         ->take($request->take ?? 10)
         ->get();
 
-      $results = [];
-
-      foreach ($jpas as $jpa) {
-        $result = JSON::unflatten($jpa->toArray(), '__');
-        $results[] = $result;
-      }
-
       $response->status = 200;
       $response->message = 'Operación correcta';
-      $response->data = $results;
+      $response->data = $jpas;
       $response->totalCount = $totalCount;
     } catch (\Throwable $th) {
       $response->status = 400;
@@ -112,18 +107,28 @@ class BasicController extends Controller
     }
   }
 
+  public function beforeSave(Request $request)
+  {
+    return $request->all();
+  }
+
   public function save(Request $request): HttpResponse|ResponseFactory
   {
     $response = new Response();
     try {
 
-      $body = $request->all();
-      $jpa = $this->model::find($request->id);
+      $body = $this->beforeSave($request);
+      $jpa = $this->model::find(isset($body['id']) ? $body['id'] : null);
 
       if (!$jpa) {
-        $this->model::create($body);
+        $jpa = $this->model::create($body);
       } else {
         $jpa->update($body);
+      }
+
+      $data = $this->afterSave($request, $jpa);
+      if ($data) {
+        $response->data = $data;
       }
 
       $response->status = 200;
@@ -137,6 +142,11 @@ class BasicController extends Controller
         $response->status
       );
     }
+  }
+
+  public function afterSave(Request $request, object $jpa)
+  {
+    return null;
   }
 
   public function status(Request $request)

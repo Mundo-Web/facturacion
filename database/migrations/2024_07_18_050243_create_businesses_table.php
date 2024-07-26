@@ -14,15 +14,21 @@ return new class extends Migration
         Schema::create('businesses', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('economic_sector_id');
             $table->string('economic_sector');
+            $table->string('business_activity_id');
             $table->string('business_activity');
+            $table->boolean('verified')->nullable();
             $table->unsignedBigInteger('person_id');
             $table->unsignedBigInteger('owner_id');
+            $table->unsignedBigInteger('contact_id');
             $table->unsignedBigInteger('created_by');
+            $table->boolean('status')->nullable()->default(true);
             $table->timestamps();
 
             $table->foreign('person_id')->references('id')->on('people');
             $table->foreign('owner_id')->references('id')->on('people');
+            $table->foreign('contact_id')->references('id')->on('people');
             $table->foreign('created_by')->references('id')->on('users');
         });
     }

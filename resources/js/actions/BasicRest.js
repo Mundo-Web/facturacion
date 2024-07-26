@@ -1,20 +1,29 @@
-import { Fetch, Notify } from "sode-extend-react"
+import { Cookies, Fetch, Notify } from "sode-extend-react"
+
+let controller = new AbortController()
 
 class BasicRest {
-  path =  null;
+  path = null
+
   paginate = async (params) => {
-    const { result } = await Fetch(`/api/${this.path}/paginate`, {
+    controller.abort('Nothing')
+    controller = new AbortController()
+    const signal = controller.signal
+    console.log(params)
+    const res = await fetch(`/api/${this.path}/paginate`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN'))
       },
-      body: JSON.stringify(params)
+      body: JSON.stringify(params),
+      signal
     })
-    return result
+    return await res.json()
   }
 
-  static save = async (client) => {
+  save = async (client) => {
     try {
       const { status, result } = await Fetch(`/api/${this.path}`, {
         method: 'POST',

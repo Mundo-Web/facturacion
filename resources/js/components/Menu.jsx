@@ -73,7 +73,7 @@ const Menu = ({ session, can }) => {
         <ul id="side-menu">
           <li className="menu-title">Panel de navegacion</li>
           <MenuItem href="/home" icon='mdi mdi-home'>Inicio</MenuItem>
-          <MenuItem href="/business" icon='mdi mdi-bag-checked'>Empresas</MenuItem>
+          <MenuItem href="/businesses" icon='mdi mdi-bag-checked'>Empresas</MenuItem>
 
           <li className="menu-title">Configuracion</li>
           <MenuItem href="/profile" icon='mdi mdi-account'>Mi perfil</MenuItem>

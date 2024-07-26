@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->boolean('verified')->nullable();
+            $table->unsignedBigInteger('person_id')->nullable();
+
+            $table->foreign('person_id')->references('id')->on('people');
         });
     }
 
@@ -23,6 +26,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('verified');
+            $table->dropColumn('person_id');
         });
     }
 };

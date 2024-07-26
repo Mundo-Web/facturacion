@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
-            $table->string('type_document');
-            $table->string('number_document');
+            $table->string('document_type');
+            $table->string('document_number');
             $table->string('name'); // tradename
             $table->string('lastname'); // businessname
-            $table->string('birthdate');
-            $table->string('gender');
-            $table->string('email');
-            $table->string('phone');
-            $table->string('ubigeo');
-            $table->string('address');
-            $table->unsignedBigInteger('created_by');
+            $table->string('birthdate')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('email')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('ubigeo')->nullable();
+            $table->string('address')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
 
             $table->foreign('created_by')->references('id')->on('users');

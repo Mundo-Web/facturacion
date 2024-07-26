@@ -27,6 +27,33 @@ class AuthRest {
       return false
     }
   }
+
+  static signup = async (request) => {
+    try {
+
+      const { status, result } = await Fetch('./api/signup', {
+        method: 'POST',
+        body: JSON.stringify(request)
+      })
+      if (!status) throw new Error(result?.message || 'Error al registrar el usuario')
+
+      Notify.add({
+        icon: '/assets/img/logo-login.svg',
+        title: 'Operacion correcta',
+        body: 'Se registro el usuario correctamente'
+      })
+
+      return result.data
+    } catch (error) {
+      Notify.add({
+        icon: '/assets/img/logo-login.svg',
+        title: 'Error',
+        body: error.message,
+        type: 'danger'
+      })
+      return null
+    }
+  }
 }
 
 export default AuthRest

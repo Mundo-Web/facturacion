@@ -9,11 +9,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use SoDe\Extend\Crypto;
 use SoDe\Extend\Response;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Routing\ResponseFactory as RoutingResponseFactory;
 
-class ProfileController extends Controller
+class ProfileController extends BasicController
 {
+
+  public $reactView = 'Profile';
+  
   public function thumbnail(Request $request, $uuid)
   {
     try {
@@ -82,7 +85,7 @@ class ProfileController extends Controller
     }
   }
 
-  public function save(Request $request): HttpResponse|ResponseFactory
+  public function save(Request $request): HttpResponse|RoutingResponseFactory
   {
     $response = new Response();
     try {

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use SoDe\Extend\Response;
 
-class DashboardController
+class DashboardController extends Controller
 {
   public function revenue(Request $request, $range)
   {

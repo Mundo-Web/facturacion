@@ -13,12 +13,14 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RemainingHistoryController;
+use App\Http\Controllers\ServicesByBusinessController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\UserByProjectController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UsersByServicesByBusinessController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -66,7 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/business', [BusinessController::class, 'save']);
     Route::put('/business/assign', [BusinessController::class, 'assign']);
     Route::delete('/business/assign', [BusinessController::class, 'assign']);
-    Route::post('/business/paginate', [BusinessController::class, 'paginate']);
+    Route::post('/businesses/paginate', [BusinessController::class, 'paginate']);
     Route::patch('/business/status', [BusinessController::class, 'status']);
     Route::patch('/business/client-status', [BusinessController::class, 'clientStatus']);
     Route::delete('/business/{id}', [BusinessController::class, 'delete']);
@@ -135,4 +137,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/users-by-projects/{relative_id}', [UserByProjectController::class, 'getUser']);
     Route::get('/users-by-projects/project/{project}', [UserByProjectController::class, 'byProject']);
     Route::patch('/users-by-projects/project', [UserByProjectController::class, 'massiveByProject']);
+
+    Route::get('/services-by-business/{ruc}', [ServicesByBusinessController::class, 'byBusiness']);
+    Route::post('/services-by-business', [ServicesByBusinessController::class, 'enableService']);
+
+    Route::post('/users-by-services-by-business', [UsersByServicesByBusinessController::class, 'inviteUser']);
 });

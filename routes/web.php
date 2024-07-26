@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BasicController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ServiceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -19,44 +22,16 @@ use Inertia\Inertia;
 |
 */
 
-require __DIR__ . '/router.php';
-
 Route::get('/', fn (Request $request) => view('home'));
 Route::get('/login', [AuthController::class, 'loginView'])->name('Login.jsx');
 Route::get('/register', [AuthController::class, 'registerView'])->name('Register.jsx');
-
+Route::get('/confirm-email/{token}', [AuthController::class, 'confirmEmailView'])->name('ConfirmEmail.jsx');
+Route::get('/confirmation/{token}', [AuthController::class, 'loginView']);
 
 Route::middleware('auth')->group(function () {
+    Route::get('/home', [BasicController::class, 'reactView'])->name('Home.jsx');
+    Route::get('/businesses', [BusinessController::class, 'reactView'])->name('Businesses.jsx');
+    Route::get('/services', [ServiceController::class, 'reactView'])->name('Services.jsx');
 
-    Route::get('/business', [BusinessController::class, 'reactView'])->name('Business.jsx');
-
-
-    foreach (Router::components as $path => $page) {
-        if (isset($page['adminto-instance']) && $page['adminto-instance']) {
-            Route::get('/' . $path, function (Request $request) use ($page) {
-                $properties = [
-                    'PUBLIC_RSA_KEY' => Controller::$PUBLIC_RSA_KEY,
-                    'token' => csrf_token(),
-                    'session' => Auth::user(),
-                    'permissions' => Auth::user()->getAllPermissions(),
-                    'WA_URL' => env('WA_URL'),
-                    'APP_URL' => env('APP_URL')
-                ];
-                if (isset($page['compact'])) {
-                    foreach ($page['compact'] as $key => $compact) {
-                        if (isset($compact['select'])) {
-                            $query = $compact['class']::select($compact['select']);
-                        } else {
-                            $query = $compact['class']::select();
-                        }
-                        if (isset($compact['filter'])) {
-                            $query = $query->where($compact['filter']);
-                        }
-                        $properties[$key] = $query->get();
-                    }
-                }
-                return Inertia::render($page['component'], $properties)->rootView('admin');
-            })->name($path);
-        }
-    }
+    Route::get('/profile', [ProfileController::class, 'reactView'])->name('Profile.jsx');
 });
